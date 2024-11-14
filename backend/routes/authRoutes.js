@@ -9,7 +9,7 @@ const viewProfileController = require('../controllers/Admin/ViewAcc.controller')
 const updateProfileController = require('../controllers/Admin/UpdateProfile.controller');
 const searchProfileController = require('../controllers/Admin/SearchProfile.controller');
 const suspendProfileController = require('../controllers/Admin/SuspendProfile.controller');
-const authMiddleware = require('../middleware/auth');
+const ViewAccController = require('../controllers/Admin/ViewAcc.controller');
 
 const router = express.Router();
 
@@ -19,22 +19,21 @@ router.post('/logout', (req, res) => {
     res.status(200).json({ message: 'Logged out successfully' });
 });
 
-// Account Management Routes
+// // Account Management Routes
 router.post('/create', (req, res) => createAccController.createUser(req, res));
-router.put('/update', authMiddleware, (req, res) => updateAccController.updateAccount(req, res));
-router.put('/suspend/:id', authMiddleware, (req, res) => suspendAccController.suspendAccount(req, res));
-router.get('/search/:id', authMiddleware, (req, res) => searchAccController.searchAccount(req, res));
+router.put('/update', (req, res) => updateAccController.updateAccount(req, res));
+router.put('/suspend',(req, res) => suspendAccController.suspendAccount(req, res));
+router.get('/view', (req, res) => ViewAccController.viewAccount(req, res));
+router.get('/search', (req, res) => searchAccController.searchAccount(req, res));
 
-// Profile Management Routes
-router.post('/profile/create', authMiddleware, (req, res) => createProfileController.createProfile(req, res));
-router.get('/profile/view/:id', authMiddleware, (req, res) => viewProfileController.viewProfile(req, res));
-router.put('/profile/update', authMiddleware, (req, res) => updateProfileController.updateProfile(req, res));
-router.get('/profile/search/:name', authMiddleware, (req, res) => searchProfileController.searchProfile(req, res));
-router.put('/profile/suspend/:name', authMiddleware, (req, res) => suspendProfileController.suspendProfile(req, res));
+// // Profile Management Routes
+// router.post('/profile/create', authMiddleware, (req, res) => createProfileController.createProfile(req, res));
+// router.get('/profile/view/:id', authMiddleware, (req, res) => viewProfileController.viewProfile(req, res));
+// router.put('/profile/update', authMiddleware, (req, res) => updateProfileController.updateProfile(req, res));
+// router.get('/profile/search/:name', authMiddleware, (req, res) => searchProfileController.searchProfile(req, res));
+// router.put('/profile/suspend/:name', authMiddleware, (req, res) => suspendProfileController.suspendProfile(req, res));
 
-// Example of a protected route
-router.get('/protected', authMiddleware, (req, res) => {
-    res.status(200).json({ message: `Hello, ${req.user.email}! This is a protected route.` });
-});
+// // Example of a protected route
+
 
 module.exports = router;

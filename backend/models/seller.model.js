@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 const sellerSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true }, // Seller's email for login
-    password: { type: String, required: true }, // Hashed password
+    pw: { type: String, required: true }, // Hashed pw
     cars: [
         {
             carId: { type: mongoose.Schema.Types.ObjectId, ref: 'UsedCar', required: true },
@@ -21,21 +21,21 @@ const sellerSchema = new mongoose.Schema({
     ],
 }, { timestamps: true });
 
-// Pre-save middleware to hash passwords
+// Pre-save middleware to hash pws
 sellerSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
+    if (this.isModified('pw')) {
+        this.pw = await bcrypt.hash(this.pw, 10);
     }
     next();
 });
 
 // Seller Login
-sellerSchema.statics.login = async function (email, password) {
+sellerSchema.statics.login = async function (email, pw) {
     const seller = await this.findOne({ email });
     if (!seller) throw new Error('Seller not found');
 
-    const isPasswordValid = await bcrypt.compare(password, seller.password);
-    if (!isPasswordValid) throw new Error('Invalid credentials');
+    const ispwValid = await bcrypt.compare(pw, seller.pw);
+    if (!ispwValid) throw new Error('Invalid credentials');
 
     return seller;
 };

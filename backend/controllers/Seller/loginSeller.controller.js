@@ -3,10 +3,10 @@ const Seller = require('../../models/seller.model');
 
 class LoginSellerController {
     async login(req, res) {
-        const { email, password } = req.body;
+        const { email, pw } = req.body;
 
         try {
-            const seller = await Seller.login(email, password);
+            const seller = await Seller.login(email, pw);
 
             // Generate JWT
             const token = jwt.sign(

@@ -17,13 +17,13 @@ const usedCarSchema = new mongoose.Schema({
         },
     ],
     email: { type: String, required: true, unique: true }, // Email for car agent account
-    password: { type: String, required: true }, // Hashed password for car agent login
+    pw: { type: String, required: true }, // Hashed pw for car agent login
 }, { timestamps: true });
 
-// Middleware to hash password before saving
+// Middleware to hash pw before saving
 usedCarSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
+    if (this.isModified('pw')) {
+        this.pw = await bcrypt.hash(this.pw, 10);
     }
     next();
 });
@@ -89,14 +89,14 @@ usedCarSchema.statics.viewRatings = async function (id) {
 };
 
 /**
- * Login for a car agent (email and password)
+ * Login for a car agent (email and pw)
  */
-usedCarSchema.statics.login = async function (email, password) {
+usedCarSchema.statics.login = async function (email, pw) {
     const carAgent = await this.findOne({ email });
     if (!carAgent) throw new Error('Car agent not found');
 
-    const isPasswordValid = await bcrypt.compare(password, carAgent.password);
-    if (!isPasswordValid) throw new Error('Invalid credentials');
+    const ispwValid = await bcrypt.compare(pw, carAgent.pw);
+    if (!ispwValid) throw new Error('Invalid credentials');
 
     return carAgent; // Return the car agent object if successful
 };

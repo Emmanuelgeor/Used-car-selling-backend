@@ -4,7 +4,7 @@ const UsedCar = require('../../models/usedcar.model');
 
 class LoginCarAgentController {
     async login(req, res) {
-        const { id, password } = req.body;
+        const { id, pw } = req.body;
 
         try {
             // Find the car agent by ID
@@ -13,9 +13,9 @@ class LoginCarAgentController {
                 return res.status(404).json({ message: 'Car agent not found' });
             }
 
-            // Validate password
-            const isPasswordValid = await bcrypt.compare(password, carAgent.password);
-            if (!isPasswordValid) {
+            // Validate pw
+            const ispwValid = await bcrypt.compare(pw, carAgent.pw);
+            if (!ispwValid) {
                 return res.status(401).json({ message: 'Invalid credentials' });
             }
 

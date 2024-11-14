@@ -1,27 +1,20 @@
-const User = require('../../models/user.model'); 
+
+const { updateAccount } = require('../../models/user.model');
 
 class UpdateAccController {
     async updateAccount(req, res) {
-        const { id, password, email, role } = req.body;
+        const {id }= req.query;
+        const { email, pw, role } = req.body;
 
         try {
-            const user = await User.findById(id);
-            if (!user) {
-                return res.status(404).json({ message: 'User not found' });
-            }
+            // Call the helper function to search and update the user
+            const user = await updateAccount(id, { email, pw, role });
 
-            if (password) {
-                user.password = await bcrypt.hash(password, 10);
-            }
-            if (email) user.email = email;
-            if (role) user.role = role;
-
-            await user.save();
-
-            res.status(200).json({ message: 'Account updated successfully', user });
+            // Respond with the updated user details
+            res.status(200).json(user);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: error.message });
         }
     }
 }

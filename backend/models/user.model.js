@@ -12,7 +12,7 @@ const userSchema = new mongoose.Schema({
         required: true,
         unique: true,
     },
-    password: {
+    pw: {
         type: String,
         required: true,
     },
@@ -22,12 +22,9 @@ const userSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true,
+        
     },
-    phone_number: {
-        type: String,
-    },
-    address: {
+    hp: {
         type: String,
     },
     active: {
@@ -45,147 +42,98 @@ const userSchema = new mongoose.Schema({
     ],
 });
 
-// Static methods for User management
-
-// User login
-userSchema.statics.login = async function (id, pw) {
-    const user = await this.findOne({ _id: id });
-    if (!user) throw new Error('User not found');
-    const isPasswordValid = await bcrypt.compare(pw, user.password);
-    if (!isPasswordValid) throw new Error('Invalid password');
-    return user;
-};
-
-// Create a new user
-userSchema.statics.createUser = async function (id, password, email, role) {
-    const existingUser = await this.findOne({ $or: [{ _id: id }, { email }] });
-    if (existingUser) throw new Error('User ID or email already exists');
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-
-    const user = new this({
-        id: id,
-        password: hashedPassword,
-        email,
-        role,
-        active: true,
-    });
-
-    return await user.save();
-};
-
-// View user details
-userSchema.statics.viewAccount = async function (id) {
-    const user = await this.findOne({ _id: id });
-    if (!user) throw new Error('User not found');
-    return user;
-};
-
-// Update user details
-userSchema.statics.updateAccount = async function (id, password, email, role) {
-    const updateFields = { email, role };
-
-    if (password) {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        updateFields.password = hashedPassword;
-    }
-
-    const user = await this.findByIdAndUpdate(id, updateFields, { new: true });
-    if (!user) throw new Error('User not found');
-    return user;
-};
-
-// Suspend a user account
-userSchema.statics.suspendAccount = async function (id) {
-    const user = await this.findByIdAndUpdate(id, { active: false }, { new: true });
-    if (!user) throw new Error('User not found');
-    return user;
-};
-
-// Search users by ID pattern
-userSchema.statics.searchAccounts = async function (id) {
-    const users = await this.find({ _id: { $regex: id, $options: 'i' } });
-    return users;
-};
-
-// Profile management methods
-
-// Add a profile to a user
-userSchema.statics.createProfile = async function (userId, name, hp, preference, age) {
-    const user = await this.findOne({ _id: userId });
-    if (!user) throw new Error('User not found');
-
-    if (user.profiles.some((profile) => profile.name === name)) {
-        throw new Error('Profile with the same name already exists');
-    }
-
-    user.profiles.push({ name, hp, preference, age, active: true });
-    await user.save();
-    return user;
-};
-
-// View a profile by name
-userSchema.statics.viewProfile = async function (userId, name) {
-    const user = await this.findOne({ _id: userId });
-    if (!user) throw new Error('User not found');
-
-    const profile = user.profiles.find((profile) => profile.name === name);
-    if (!profile) throw new Error('Profile not found');
-
-    return profile;
-};
-
-// Update a profile by name
-userSchema.statics.updateProfile = async function (userId, name, hp, preference, age) {
-    const user = await this.findOne({ _id: userId });
-    if (!user) throw new Error('User not found');
-
-    const profile = user.profiles.find((profile) => profile.name === name);
-    if (!profile) throw new Error('Profile not found');
-
-    profile.hp = hp;
-    profile.preference = preference;
-    profile.age = age;
-    await user.save();
-
-    return profile;
-};
-
-// Suspend a profile by name
-userSchema.statics.suspendProfile = async function (userId, name) {
-    const user = await this.findOne({ _id: userId });
-    if (!user) throw new Error('User not found');
-
-    const profile = user.profiles.find((profile) => profile.name === name);
-    if (!profile) throw new Error('Profile not found');
-
-    profile.active = false;
-    await user.save();
-
-    return profile;
-};
-
-// Search profiles by name pattern
-userSchema.statics.searchProfiles = async function (userId, namePattern) {
-    const user = await this.findOne({ _id: userId });
-    if (!user) throw new Error('User not found');
-
-    const matchedProfiles = user.profiles.filter((profile) =>
-        new RegExp(namePattern, 'i').test(profile.name)
-    );
-
-    return matchedProfiles;
-};
-
-// Middleware to hash password before saving
-userSchema.pre('save', async function (next) {
-    if (this.isModified('password')) {
-        this.password = await bcrypt.hash(this.password, 10);
-    }
-    next();
-});
-
 // Define the User model
 const User = mongoose.model('User', userSchema);
 
-module.exports = User;
+const login = async (id, pw) => {
+    const user = await User.findOne({ id: id });
+
+    if (!user) throw new Error('User not found');
+
+    const isPasswordValid = await bcrypt.compare(pw,user.pw);
+   
+    if (!isPasswordValid) throw new Error('Invalid password');
+   
+    return user;
+};
+
+// create a user.........................
+const createUser = async (id, pw, email, role) => {
+    const existingUser = await User.findOne({ email });
+    if (existingUser) {
+        throw new Error('User already exists');
+    }
+
+    const hashedpw = await bcrypt.hash(pw, 10);
+    const newUser = new User({ id, email, role, pw: hashedpw });    
+    await newUser.save();
+
+    return newUser;
+};
+
+// Search account............................
+const searchAccount = async (id) => {
+    // Find the user by their ID
+    const user = await User.findOne(id);
+    if (!user) {
+        throw new Error('Account not found');
+    }
+
+
+    return user;
+};
+
+
+//Update Account.......................
+const updateAccount = async (id,{ email, pw, role }) => {
+    // Find the user by their ID
+    const user = await User.findOne({id});
+    if (!user) {
+        throw new Error('User not found');
+    }
+    // Update user fields if provided
+    if (email) user.email = email;
+    if (pw) {
+        user.pw = await bcrypt.hash(pw, 10); // Hash the new password
+    }
+    if (role) user.role = role;
+    // Save the updated user
+    await user.save();
+
+    return user;
+};
+
+
+//View Account............................
+const viewAccount = async () => {
+    // Exclude the `profiles` field
+    const users = await User.find({}, { profiles: 0 }); // Exclude `profiles` field
+    if (!users || users.length === 0) {
+        throw new Error('No users found');
+    }
+
+    return users;
+};
+
+
+//Suspend user...............................
+const suspendAccount = async (id) => {
+    // Find the user by ID using findOne
+    const user = await User.findOne( id );
+
+    if (!user) {
+        throw new Error('Account not found');
+    }
+
+    // Set the `active` field to false to suspend the user
+    user.active = false;
+
+    // Save the updated user
+    await user.save();
+
+    return user;
+};
+
+  
+module.exports = { User, login, createUser, searchAccount,updateAccount,viewAccount,suspendAccount};
+

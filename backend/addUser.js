@@ -1,9 +1,9 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const User = require('./models/user.model'); // Adjust path
+const {User} = require('./models/user.model'); // Adjust path
 
 // MongoDB connection URI
-const MONGO_URI = 'mongodb+srv://emmanualgeorge99:1234567890@cluster0.s7ea1.mongodb.net/csit314?retryWrites=true&w=majority';
+const MONGO_URI = 'mongodb+srv://emmanualgeorge99:12345678123@cluster1.ujldw.mongodb.net/csit314?retryWrites=true&w=majority';
 
 const addAdminUsers = async () => {
     try {
@@ -16,13 +16,10 @@ const addAdminUsers = async () => {
         // Define admin users
         const adminUsers = [
             {
-                id: 'adminUser1',
+                id: 'adminUser111',
                 email: 'admin1@example.com',
-                password: 'AdminPassword1',
+                pw: 'AdminPassword1',
                 role: 'admin',
-                name: 'Admin One',
-                phone_number: '987-654-3210',
-                address: '456 Admin Blvd',
                 profiles: [
                     {
                         name: 'Admin One',
@@ -34,13 +31,10 @@ const addAdminUsers = async () => {
                 ],
             },
             {
-                id: 'adminUser3',
+                id: 'adminUser2111',
                 email: 'admin2@example.com',
-                password: 'AdminPassword2',
+                pw: 'AdminPassword2',
                 role: 'admin',
-                name: 'Admin Three',
-                phone_number: '456-789-0123',
-                address: '789 Admin Lane',
                 profiles: [
                     {
                         name: 'Admin Two',
@@ -57,21 +51,20 @@ const addAdminUsers = async () => {
             const existingUser = await User.findOne({ id: adminUser.id });
 
             if (existingUser) {
-                console.log(`User with ID "${adminUser.id}" already exists.`);
+                console.log(`User with ID "${adminUser._id}" already exists.`);
                 continue;
             }
 
             try {
-                const hashedPassword = await bcrypt.hash(adminUser.password, 10);
+                const hashedPassword = await bcrypt.hash(adminUser.pw, 10);
 
                 const newUser = new User({
                     id: adminUser.id,
                     email: adminUser.email,
-                    password: hashedPassword,
+                    pw: hashedPassword,
                     role: adminUser.role,
                     name: adminUser.name,
-                    phone_number: adminUser.phone_number,
-                    address: adminUser.address,
+                    hp: adminUser.hp,
                     profiles: adminUser.profiles,
                 });
 
