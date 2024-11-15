@@ -52,8 +52,29 @@ function displayAccounts(accounts) {
     `).join('');
 }
 
-function viewAccount(id) {
-    window.location.href = `/viewAccount/${id}`;
+async function viewAccount(id) {
+    try {
+        const response = await fetch(`/api/view?id=${id}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
+
+        if (response.ok) {
+            const account = await response.json();
+            console.log('View Account:', account);
+            // Redirect to a page to display account details or update the UI dynamically
+            window.location.href = `/viewAccountDetails.html?id=${id}`;
+        } else {
+            const data = await response.json();
+            alert(data.message || 'Failed to view account');
+        }
+    } catch (error) {
+        console.error('Error viewing account:', error);
+        alert('An error occurred while fetching the account details.');
+    }
 }
+
 
 window.onload = fetchAccounts;
