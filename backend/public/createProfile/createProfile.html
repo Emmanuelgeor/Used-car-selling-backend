@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Profile</title>
+    <link rel="stylesheet" href="createProfile.css">
+</head>
+<body>
+<div class="form-container">
+    <h2>Create Profile</h2>
+    <form id="createProfileForm">
+        <div class="form-group">
+            <label for="id">User ID</label>
+            <input type="text" id="id" name="id" required>
+        </div>
+        <div class="form-group">
+            <label for="name">Full Name</label>
+            <input type="text" id="name" name="name" required>
+        </div>
+        <div class="form-group">
+            <label for="hp">Phone Number</label>
+            <input type="text" id="hp" name="hp" required>
+        </div>
+        <div class="form-group">
+            <label for="preference">Preference</label>
+            <input type="text" id="preference" name="preference" required>
+        </div>
+        <div class="form-group">
+            <label for="age">Age</label>
+            <input type="number" id="age" name="age" required>
+        </div>
+        <button type="submit" class="submit-btn">Create Profile</button>
+    </form>
+    <div id="errorMessage" class="error-message"></div>
+    <div id="successMessage" class="success-message"></div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>
