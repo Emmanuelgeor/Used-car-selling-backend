@@ -1,23 +1,20 @@
+const User = require('../../models/user.model.js'); 
 const jwt = require('jsonwebtoken');
-const Buyer = require('../../models/buyer.model');
 
 class LoginBuyerController {
-    async login(req, res) {
-        const { email, pw } = req.body;
+    // Method to authenticate a user
+    async authenticateUser(req, res) {
+        const { id, pw } = req.body;
 
         try {
-            const buyer = await Buyer.login(email, pw);
-
-            // Generate JWT
-            const token = jwt.sign(
-                { id: buyer._id, email: buyer.email, role: 'buyer' },
-                process.env.JWT_SECRET,
-                { expiresIn: '1h' }
-            );
-
-            res.status(200).json({ message: 'Login successful', token });
+            console.log(id);
+            console.log(pw);
+            const user = await User.login(id,pw);
+            res.status(200).json({user});
+        
         } catch (error) {
-            res.status(401).json({ message: error.message });
+            console.error('Error:', error);
+            res.status(500).json({ message: error.message });
         }
     }
 }

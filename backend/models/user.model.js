@@ -54,9 +54,13 @@ const login = async (id, pw) => {
     const isPasswordValid = await bcrypt.compare(pw,user.pw);
    
     if (!isPasswordValid) throw new Error('Invalid password');
-   
+    if (user.role !== 'Admin') {
+        throw new Error('Access denied: Admin role required');
+    }
+    // Return the user if all checks pass
     return user;
 };
+   
 
 // create a user.........................
 const createUser = async (id, pw, email, role) => {

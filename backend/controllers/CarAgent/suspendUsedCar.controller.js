@@ -1,15 +1,15 @@
-const UsedCar = require('../../models/usedcar.model');
+const { suspendUsedCar } = require('../../models/usedcar.model');
 
 class SuspendUsedCarController {
     async suspendUsedCar(req, res) {
-        const { id } = req.params;
+        const {car_id} = req.params; 
 
         try {
-            const car = await UsedCar.suspendUsedCar(id);
-            res.status(200).json({ message: 'Used car suspended successfully', car });
+            // Suspend the user by calling the helper function
+            const usedcar = await suspendUsedCar(car_id);
+          res.status(200).json(usedcar);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
         }
     }
 }

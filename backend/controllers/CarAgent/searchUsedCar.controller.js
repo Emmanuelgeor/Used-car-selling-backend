@@ -1,17 +1,17 @@
-const UsedCar = require('../../models/usedcar.model');
-
+const { searchUsedCar } = require('../../models/usedcar.model');
 class SearchUsedCarController {
     async searchUsedCar(req, res) {
-        const { make, year, price, spec } = req.query;
+        const car_id  = req.query;
 
         try {
-            const cars = await UsedCar.searchUsedCar(make, year, price, spec);
-            res.status(200).json(cars);
+            // Call the searchAccount function
+            const usedcar = await searchUsedCar(car_id);
+            res.status(200).json(usedcar);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
+
+            // Check for specific error messages
         }
     }
 }
-
 module.exports = new SearchUsedCarController();

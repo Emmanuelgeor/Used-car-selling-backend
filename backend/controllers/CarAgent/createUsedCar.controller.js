@@ -2,11 +2,12 @@ const {createUsedCar} = require('../../models/usedcar.model');
 const bcrypt = require('bcryptjs');
 
 class CreateUsedCarController {
-    async createUsedCare(req, res) {
+    async createUsedCar(req, res) {
         const { car_id, make, year, price, spec, photo } = req.body;
 
         try {
-            const car = await createUsedCar(car_id,make, year, price, spec, photo);
+            const usedcar = await createUsedCar(car_id,make, year, price, spec, photo);
+            res.status(201).json({usedcar });
             
         } catch (error) {
             console.error('Error:', error);

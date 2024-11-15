@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { User } = require('./user.model');
 
 const buyerSchema = new mongoose.Schema({
     email: { type: String, required: true, unique: true },
@@ -20,23 +21,24 @@ const buyerSchema = new mongoose.Schema({
     ],
 }, { timestamps: true });
 
-// Pre-save middleware to hash pws
-buyerSchema.pre('save', async function (next) {
-    if (this.isModified('pw')) {
-        this.pw = await bcrypt.hash(this.pw, 10);
+
+
+//login..................................................
+
+
+const login = async (id, pw) => {
+    const user = await User.findOne({ id: id });
+
+    if (!user) throw new Error('User not found');
+
+    const isPasswordValid = await bcrypt.compare(pw,user.pw);
+   
+    if (!isPasswordValid) throw new Error('Invalid password');
+    if (user.role !== 'Buyer') {
+        throw new Error('Access denied: Admin role required');
     }
-    next();
-});
-
-// Buyer Login
-buyerSchema.statics.login = async function (email, pw) {
-    const buyer = await this.findOne({ email });
-    if (!buyer) throw new Error('Buyer not found');
-
-    const ispwValid = await bcrypt.compare(pw, buyer.pw);
-    if (!ispwValid) throw new Error('Invalid credentials');
-
-    return buyer;
+    // Return the user if all checks pass
+    return user;
 };
 
 // Add a car to shortlist
@@ -96,4 +98,4 @@ buyerSchema.statics.rateAgent = async function (buyerId, agentId, rating, review
 
 const Buyer = mongoose.model('Buyer', buyerSchema);
 
-module.exports = Buyer;
+module.exports = login;

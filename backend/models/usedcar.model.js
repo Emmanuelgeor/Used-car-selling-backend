@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { User } = require('./user.model');
 
 // Define the UsedCar schema
 const usedCarSchema = new mongoose.Schema({
@@ -54,71 +55,24 @@ const usedCarSchema = new mongoose.Schema({
 
 const UsedCar = mongoose.model('UsedCar', usedCarSchema);
 
-
-
-/**
- * View a used car by ID
- */
-usedCarSchema.statics.viewUsedCar = async function (id) {
-    const car = await this.findById(id);
-    if (!car) throw new Error('Used car not found');
-    return car;
-};
-
-/**
- * Update a used car by ID
- */
-usedCarSchema.statics.updateUsedCar = async function (id, make, year, price, spec, photo) {
-    const updatedFields = { make, year, price, spec, photo };
-    const car = await this.findByIdAndUpdate(id, updatedFields, { new: true });
-    if (!car) throw new Error('Used car not found');
-    return car;
-};
-
-/**
- * Suspend a used car by ID
- */
-usedCarSchema.statics.suspendUsedCar = async function (id) {
-    const car = await this.findByIdAndUpdate(id, { active: false }, { new: true });
-    if (!car) throw new Error('Used car not found');
-    return car;
-};
-
-/**
- * Search for used cars based on filters
- */
-usedCarSchema.statics.searchUsedCar = async function (make, year, price, spec) {
-    const query = {
-        ...(make && { make: { $regex: make, $options: 'i' } }),
-        ...(year && { year }),
-        ...(price && { price: { $lte: price } }), // Price less than or equal to the provided value
-        ...(spec && { spec: { $regex: spec, $options: 'i' } }),
-    };
-    return await this.find(query);
-};
-
-/**
- * View ratings for a specific car
- */
-usedCarSchema.statics.viewRatings = async function (id) {
-    const car = await this.findById(id);
-    if (!car) throw new Error('Used car not found');
-    return car.ratings;
-};
-
 //login........................................................
 
 const login = async (id, pw) => {
-    const user = await UsedCar.findOne({ id: id });
+    const user = await User.findOne({ id: id });
 
     if (!user) throw new Error('User not found');
 
     const isPasswordValid = await bcrypt.compare(pw,user.pw);
    
     if (!isPasswordValid) throw new Error('Invalid password');
-   
+    if (user.role !== 'Caragent') {
+        throw new Error('You selected wrong role');
+    }
+
+    // Return the user if all checks pass
     return user;
 };
+   
 //Logout..........................................................
 
 usedCarSchema.statics.logout = function () {
@@ -131,14 +85,77 @@ usedCarSchema.statics.logout = function () {
 const createUsedCar = async (car_id, make, year, price, spec, photo)=> {
     const existingUser = await UsedCar.findOne({car_id});
     if (existingUser) {
-        throw new Error('User already exists');
+        throw new Error('car already exists');
     }
-    const hashedpw = await bcrypt.hash(pw, 10);
-    const newcar = new UsedCar({ car_id, make, year, price, spec, photo});
+    const newUsedcar = new UsedCar({ car_id, make, year, price, spec, photo});
     await newUsedcar.save();
 
     return newUsedcar;
 };
+// Update used car..........................................................
+const updateUsedCar = async (car_id,{ make, year, price, spec, photo }) => {
+    // Find the user by their ID
+    const usedcar = await UsedCar.findOne({car_id});
+    if (!usedcar) {
+        throw new Error('car not found');
+    }
+    // Update user fields if provided
+    if (make) usedcar.make = make;
+    if (year) usedcar.year = year;
+    if (price) usedcar.price = price;
+    if (spec) usedcar.spec = spec;
+    if (photo) usedcar.photo = photo;
+    // Save the updated user
+    await usedcar.save();
+
+    return usedcar;
+};
+
+//Search usedcar...............................................................
+const searchUsedCar = async (car_id) => {
+    // Find the user by their ID
+    const usedcar = await UsedCar.findOne(car_id);
+    if (!usedcar) {
+        throw new Error('Account not found');
+    }
+    return usedcar;
+};
+
+//Suspend usedcar..................................................................
+const suspendUsedCar = async (car_id) => {
+    // Find the car by ID using findOne
+    const usedcar = await UsedCar.findOne(car_id );
+    if (!usedcar) {
+        throw new Error('Car not found');
+    }
+    // Set the `active` field to false to suspend the user
+    usedcar.active = false;
+    // Save the updated user
+    await usedcar.save();
+    return usedcar;
+};
+
+//View usedcar.............................................................................
+
+const viewUsedCar = async () => {
+    const usedcars = await User.find({}, { rating: 0 }); 
+    if (!usedcars || usedcars.length === 0) {
+        throw new Error('No users found');
+    }
+
+    return usedcars;
+};
+
+//view ratings................................................................................
+const viewRating = async () => {
+    const usedcar = await UsedCar.find({}, { ratings: 1, _id: 0 });
+    if (!usedcar || usedcar.length === 0) {
+        throw new Error('No ratings');
+    }
+
+    return usedcar;
+};
 
 
-module.exports = { UsedCar,login,createUsedCar};
+
+module.exports = { UsedCar,login,createUsedCar,updateUsedCar,searchUsedCar,suspendUsedCar,viewUsedCar,viewRating};

@@ -7,6 +7,8 @@ class LoginController {
         const { id, pw } = req.body;
 
         try {
+            console.log(id);
+            console.log(pw);
             const user = await User.login(id,pw);
             res.status(200).json({user});
         

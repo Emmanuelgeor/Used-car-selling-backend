@@ -19,7 +19,7 @@ const addAdminUsers = async () => {
                 id: 'adminUser111',
                 email: 'admin1@example.com',
                 pw: 'AdminPassword1',
-                role: 'admin',
+                role: 'Admin',
                 profiles: [
                     {
                         name: 'Admin One',
@@ -34,7 +34,7 @@ const addAdminUsers = async () => {
                 id: 'adminUser2111',
                 email: 'admin2@example.com',
                 pw: 'AdminPassword2',
-                role: 'admin',
+                role: 'Caragent',
                 profiles: [
                     {
                         name: 'Admin Two',

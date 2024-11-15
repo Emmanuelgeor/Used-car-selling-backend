@@ -1,17 +1,19 @@
-const UsedCar = require('../../models/usedcar.model');
+const {updateUsedCar} = require('../../models/usedcar.model');
 
-class UpdateUsedCarController {
+class updateUsedCarController {
     async updateUsedCar(req, res) {
-        const { id, make, year, price, spec, photo } = req.body;
+        const {car_id }= req.query;
+        const {make, year, price, spec, photo  } = req.body;
 
         try {
-            const car = await UsedCar.updateUsedCar(id, make, year, price, spec, photo);
-            res.status(200).json({ message: 'Used car updated successfully', car });
+            const usedcar = await updateUsedCar(car_id, { car_id, make, year, price, spec, photo });
+
+            // Respond with the updated user details
+            res.status(200).json(usedcar);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
+            res.status(500).json({ message: error.message });
         }
     }
 }
-
-module.exports = new UpdateUsedCarController();
+      module.exports = new updateUsedCarController();

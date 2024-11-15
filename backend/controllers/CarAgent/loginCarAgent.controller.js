@@ -1,9 +1,9 @@
 const jwt = require('jsonwebtoken');
-const UsedCar = require('../../models/usedcar.model');
+const User = require('../../models/usedcar.model');
 
 class LoginCarAgentController {    
        // Method to authenticate a user
-        async authenticateUser(req, res) {
+        async authenticateUser1(req, res) {
             const { id, pw } = req.body;
     
             try {

@@ -1,17 +1,19 @@
-const UsedCar = require('../../models/usedcar.model');
+const {viewRating } = require('../../models/usedcar.model');
 
-class ViewRatingsController {
-    async viewRatings(req, res) {
-        const { id } = req.params;
+class viewRatingsController {
+    async viewRating(req, res) {
 
         try {
-            const ratings = await UsedCar.viewRatings(id);
-            res.status(200).json(ratings);
+   
+            const usedcar = await viewRating();
+
+            // Respond with the result
+            res.status(200).json(usedcar);
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
+
         }
     }
 }
 
-module.exports = new ViewRatingsController();
+module.exports = new viewRatingsController();
