@@ -1,18 +1,32 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import "./Login.css"; // Import your styles
+import "./login.css"; // Import your styles
 
 const Login = () => {
-  const [id, setId] = useState(""); // Input field for ID
-  const [pw, setPassword] = useState(""); // Input field for Password
-  const [role, setRole] = useState(""); // Input field for Role selection
+  // Define formData state as an object to hold all form inputs
+  const [formData, setFormData] = useState({
+    id: "",    // User ID
+    pw: "",    // Password
+    role: "",  // Role
+  });
+
   const [errorMessage, setErrorMessage] = useState(""); // Error message state
   const navigate = useNavigate(); // Navigation hook
+
+  // Handle form input change
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value, // Dynamically update the field in formData
+    }));
+  };
 
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault(); // Prevent default form submission
+    const { id, pw, role } = formData; // Extract data from formData
     try {
       // Normalize role to ensure case-insensitivity
       const normalizedRole = role.trim().toLowerCase();
@@ -53,13 +67,14 @@ const Login = () => {
         <h2>Login</h2>
         {errorMessage && <p className="error-message">{errorMessage}</p>}
         <div className="form-group">
-          <label htmlFor="id">ID</label>
+          <label htmlFor="id">User ID</label>
           <input
             type="text"
             id="id"
-            value={id}
-            onChange={(e) => setId(e.target.value)}
-            placeholder="Enter your ID"
+            name="id" // Add name attribute to connect with formData
+            value={formData.id} // Bind input value to formData.id
+            onChange={handleChange} // Handle changes using handleChange
+            placeholder="Enter your User ID"
             required
           />
         </div>
@@ -68,8 +83,9 @@ const Login = () => {
           <input
             type="password"
             id="password"
-            value={pw}
-            onChange={(e) => setPassword(e.target.value)}
+            name="pw" // Add name attribute to connect with formData
+            value={formData.pw} // Bind input value to formData.pw
+            onChange={handleChange} // Handle changes using handleChange
             placeholder="Enter your password"
             required
           />
@@ -78,8 +94,9 @@ const Login = () => {
           <label htmlFor="role">Role</label>
           <select
             id="role"
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
+            name="role" // Add name attribute to connect with formData
+            value={formData.role} // Bind select value to formData.role
+            onChange={handleChange} // Handle changes using handleChange
             required
           >
             <option value="" disabled>Select Role</option>
@@ -93,6 +110,7 @@ const Login = () => {
           Login
         </button>
       </form>
+      <p><a href="/createUser">I don't have an account</a></p>
     </div>
   );
 };
