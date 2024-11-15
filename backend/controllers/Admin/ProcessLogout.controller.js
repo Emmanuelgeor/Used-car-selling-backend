@@ -1,8 +1,12 @@
 class ProcessLogoutController {
-    processLogout(req, res) {
-        // Invalidate user session or JWT token (frontend should handle this)
-        res.status(200).json({ message: 'Logged out successfully' });
+    async processLogout(req, res) {
+        try {
+            // Call the logout function
+            await processLogout(req);
+            res.redirect('/login');
+        } catch (err) {
+            console.error( err);
+        }
     }
 }
-
 module.exports = new ProcessLogoutController();

@@ -7,7 +7,6 @@ class UpdateAccController {
         const { email, pw, role } = req.body;
 
         try {
-            // Call the helper function to search and update the user
             const user = await updateAccount(id, { email, pw, role });
 
             // Respond with the updated user details

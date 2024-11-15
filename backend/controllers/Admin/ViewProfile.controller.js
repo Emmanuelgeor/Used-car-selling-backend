@@ -1,21 +1,22 @@
-const User = require('../../models/user.model'); 
+const { viewProfile } = require('../../models/user.model');
 
-class ViewProfileController {
+class viewProfileController {
     async viewProfile(req, res) {
-        const { id } = req.params;
 
         try {
-            const user = await User.findById(id);
-            if (!user || !user.profile) {
-                return res.status(404).json({ message: 'Profile not found' });
-            }
+            // Call the helper function
+    
+            const user = await viewProfile();
 
-            res.status(200).json(user.profile);
+            // Respond with the result
+            res.status(200).json(user);
         } catch (error) {
             console.error('Error:', error);
+
+            // Handle generic errors
             res.status(500).json({ message: 'Internal server error' });
         }
     }
 }
 
-module.exports = new ViewProfileController();
+module.exports = new viewProfileController();

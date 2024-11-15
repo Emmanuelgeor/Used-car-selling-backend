@@ -3,40 +3,58 @@ const bcrypt = require('bcryptjs');
 
 // Define the UsedCar schema
 const usedCarSchema = new mongoose.Schema({
-    make: { type: String, required: true },
-    year: { type: Number, required: true },
-    price: { type: Number, required: true },
-    spec: { type: String, required: true },
-    photo: { type: String, required: true }, // URL or file path for the car's image
-    active: { type: Boolean, default: true }, // Indicates if the car is active or suspended
+    car_id: {
+        type: String,
+        required: true,
+        unique: true,
+    },
+    make: {
+        type: String,
+        required: true,
+    },
+    year: {
+        type: Number,
+        required: true,
+    },
+    price: {
+        type: Number,
+        required: true,
+    },
+    spec: {
+        type: String,
+        required: true,
+    },
+    photo: {
+        type: String,
+        required: true, // URL or file path for the car's image
+    },
+    active: {
+        type: Boolean,
+        default: true, 
+    },
     ratings: [
         {
-            userId: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
-            rating: { type: Number, required: true, min: 1, max: 5 },
-            comment: { type: String },
+            userId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'User',
+                required: true,
+            },
+            rating: {
+                type: Number,
+                required: true,
+                min: 1,
+                max: 5,
+            },
+            comment: {
+                type: String,
+            },
         },
     ],
-    email: { type: String, required: true, unique: true }, // Email for car agent account
-    pw: { type: String, required: true }, // Hashed pw for car agent login
-}, { timestamps: true });
-
-// Middleware to hash pw before saving
-usedCarSchema.pre('save', async function (next) {
-    if (this.isModified('pw')) {
-        this.pw = await bcrypt.hash(this.pw, 10);
-    }
-    next();
 });
 
-// Define static methods for UsedCar management
+const UsedCar = mongoose.model('UsedCar', usedCarSchema);
 
-/**
- * Create a new used car
- */
-usedCarSchema.statics.createUsedCar = async function (make, year, price, spec, photo) {
-    const car = new this({ make, year, price, spec, photo, active: true });
-    return await car.save();
-};
+
 
 /**
  * View a used car by ID
@@ -88,30 +106,39 @@ usedCarSchema.statics.viewRatings = async function (id) {
     return car.ratings;
 };
 
-/**
- * Login for a car agent (email and pw)
- */
-usedCarSchema.statics.login = async function (email, pw) {
-    const carAgent = await this.findOne({ email });
-    if (!carAgent) throw new Error('Car agent not found');
+//login........................................................
 
-    const ispwValid = await bcrypt.compare(pw, carAgent.pw);
-    if (!ispwValid) throw new Error('Invalid credentials');
+const login = async (id, pw) => {
+    const user = await UsedCar.findOne({ id: id });
 
-    return carAgent; // Return the car agent object if successful
+    if (!user) throw new Error('User not found');
+
+    const isPasswordValid = await bcrypt.compare(pw,user.pw);
+   
+    if (!isPasswordValid) throw new Error('Invalid password');
+   
+    return user;
 };
+//Logout..........................................................
 
-/**
- * Logout (Client-Side Token Removal)
- * JWT-based systems typically don't have server-side logout.
- * To add token invalidation, maintain a blacklist or similar mechanism.
- */
 usedCarSchema.statics.logout = function () {
     // Logout is handled on the client by removing the JWT token.
     return { message: 'Logged out successfully' };
 };
 
-// Define the UsedCar model
-const UsedCar = mongoose.model('UsedCar', usedCarSchema);
+ //Create a new used car.................................................
 
-module.exports = UsedCar;
+const createUsedCar = async (car_id, make, year, price, spec, photo)=> {
+    const existingUser = await UsedCar.findOne({car_id});
+    if (existingUser) {
+        throw new Error('User already exists');
+    }
+    const hashedpw = await bcrypt.hash(pw, 10);
+    const newcar = new UsedCar({ car_id, make, year, price, spec, photo});
+    await newUsedcar.save();
+
+    return newUsedcar;
+};
+
+
+module.exports = { UsedCar,login,createUsedCar};

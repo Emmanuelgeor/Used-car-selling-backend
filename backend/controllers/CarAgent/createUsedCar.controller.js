@@ -1,17 +1,16 @@
-const UsedCar = require('../../models/usedcar.model');
+const {createUsedCar} = require('../../models/usedcar.model'); 
+const bcrypt = require('bcryptjs');
 
 class CreateUsedCarController {
-    async createUsedCar(req, res) {
-        const { make, year, price, spec, photo } = req.body;
+    async createUsedCare(req, res) {
+        const { car_id, make, year, price, spec, photo } = req.body;
 
         try {
-            const car = await UsedCar.createUsedCar(make, year, price, spec, photo);
-            res.status(201).json({ message: 'Used car created successfully', car });
+            const car = await createUsedCar(car_id,make, year, price, spec, photo);
+            
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: 'Internal server error' });
         }
     }
 }
-
 module.exports = new CreateUsedCarController();

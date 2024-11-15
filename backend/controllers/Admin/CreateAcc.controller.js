@@ -9,10 +9,9 @@ class CreateAccController {
             
             const user = await createUser(id, pw, email, role)
 
-            res.status(201).json({ message: 'Account created successfully',user });
+            res.status(201).json({user });
         } catch (error) {
             console.error('Error:', error);
-            res.status(500).json({ message: error.message });
         }
     }
 }

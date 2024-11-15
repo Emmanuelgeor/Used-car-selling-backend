@@ -12,12 +12,6 @@ class SearchAccController {
             console.error('Error:', error);
 
             // Check for specific error messages
-            if (error.message === 'Account not found') {
-                return res.status(404).json({ message: error.message });
-            }
-
-            // Handle generic errors
-            res.status(500).json({ message: 'Internal server error' });
         }
     }
 }
