@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import './searchAcc.css'; // Importing the CSS file for styling
 
 const SearchAccount = () => {
@@ -15,12 +15,18 @@ const SearchAccount = () => {
         setErrorMessage('');
 
         try {
-            const response = await fetch(`/api/searchAccount?search=${searchTerm}`);
+            // Update the URL to include the correct endpoint and query parameter
+            const response = await fetch(`http://localhost:5006/api/searchAccount?id=${encodeURIComponent(searchTerm)}`);
+
+            if (!response.ok) {
+                throw new Error('Failed to fetch accounts');
+            }
+
             const data = await response.json();
             setAccounts(data);
         } catch (error) {
             console.error('Error fetching accounts:', error);
-            setErrorMessage('Failed to fetch accounts.');
+            setErrorMessage('Failed to fetch accounts. Please try again later.');
         } finally {
             setLoading(false);
         }
@@ -29,7 +35,7 @@ const SearchAccount = () => {
     // Function to suspend an account
     const suspendAccount = async (id) => {
         try {
-            const response = await fetch(`/api/suspendAccount/${id}`, {
+            const response = await fetch(`http://localhost:5006/api/suspendAccount/${id}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
             });
