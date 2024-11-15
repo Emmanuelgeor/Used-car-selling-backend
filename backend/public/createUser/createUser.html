@@ -1,0 +1,36 @@
+<!-- createUser.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create User</title>
+    <link rel="stylesheet" href="/createUser/createUser.css">
+</head>
+<body>
+<div class="create-user-container">
+    <div class="create-user-card">
+        <h2>Create New User</h2>
+        <form id="createUserForm">
+            <label for="id">ID:</label>
+            <input type="text" id="id" name="id" placeholder="Enter user ID" required>
+
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" placeholder="Enter email" required>
+
+            <label for="pw">Password:</label>
+            <input type="password" id="pw" name="pw" placeholder="Enter password" required>
+
+            <label for="role">Role:</label>
+            <select id="role" name="role" required>
+                <option value="admin">Buyer</option>
+                <option value="user">Seller</option>
+                <option value="user">Agent</option>
+                <option value="user">Admin</option>
+            </select>
+
+            <button type="submit">Create Account</button>
+        </form>
+    </div>
+
+</div>
